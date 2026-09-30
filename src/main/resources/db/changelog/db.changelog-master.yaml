@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: doctor_name
+      changes:
+        - createSequence:
+            sequenceName: films_id_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: films
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: film_id
+                  type: BIGINT
+                  constraints:
+                    unique: true
+              - column:
+                  name: film_name
+                  type: TEXT
+              - column:
+                  name: year
+                  type: INTEGER
+              - column:
+                  name: rating
+                  type: numeric(4,2)
+              - column:
+                  name: description
+                  type: TEXT
