@@ -4,6 +4,7 @@ import com.example.kinopoisk.dto.FilmDTO;
 import com.example.kinopoisk.mapper.FilmMapper;
 import com.example.kinopoisk.model.Film;
 import com.example.kinopoisk.repository.FilmRepository;
+import com.example.kinopoisk.service.FilmService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,7 @@ import java.math.BigDecimal;
 @Validated
 public class FilmController {
 
-    private final FilmRepository filmRepository;
-    private final FilmMapper filmMapper;
+    private final FilmService filmService;
 
     @GetMapping
     public Page<FilmDTO> search(
@@ -41,13 +41,9 @@ public class FilmController {
         Sort sort = sortDir.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
-
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Film> result = filmRepository.search(
-                filmId, filmName, yearFrom, yearTo,
+        return filmService.search(filmId, filmName, yearFrom, yearTo,
                 ratingFrom, ratingTo, pageable);
-
-        return result.map(filmMapper::toDto);
     }
 }
