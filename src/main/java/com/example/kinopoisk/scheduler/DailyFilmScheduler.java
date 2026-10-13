@@ -29,7 +29,7 @@ public class DailyFilmScheduler {
     private final GenreScheduleProperties genreProperties;
 
 
-    @Scheduled(cron = "0 0 7 * * *", zone = "Europe/Moscow")
+    @Scheduled(cron = "${app.schedule.cron}", zone = "Europe/Moscow")
     public void fetchDailyFilms() {
         DayOfWeek today = LocalDate.now().getDayOfWeek();
         fetchFilmsForDay(today);
