@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,18 +27,32 @@ public class FilmService {
     private final FilmMapper filmMapper;
     @Transactional
     public List<Film> saveNewFilms(List<KinopoiskFilmItem> items) {
-        Set<Long> incomingIds = items.stream()
-                .map(KinopoiskFilmItem::getKinopoiskId)
-                .collect(Collectors.toSet());
 
-        Set<Long> existingIds = filmRepository.findAllByFilmIdIn(incomingIds).stream()
+        Map<Long, KinopoiskFilmItem> uniqueItems = items.stream()
+                .filter(item -> item.getKinopoiskId() != null)
+                .collect(Collectors.toMap(
+                        KinopoiskFilmItem::getKinopoiskId,
+                        item -> item,
+                        (existing, replacement) -> existing
+                ));
+
+        if (uniqueItems.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> existingIds = filmRepository
+                .findAllByFilmIdIn(uniqueItems.keySet()).stream()
                 .map(Film::getFilmId)
                 .collect(Collectors.toSet());
 
-        List<Film> toSave = items.stream()
+        List<Film> toSave = uniqueItems.values().stream()
                 .filter(item -> !existingIds.contains(item.getKinopoiskId()))
                 .map(kinopoiskFilmMapper::toEntity)
                 .toList();
+
+        if (toSave.isEmpty()) {
+            return List.of();
+        }
 
         return filmRepository.saveAll(toSave);
     }
