@@ -13,7 +13,6 @@ public class SchedulerController {
 
     private final DailyFilmScheduler scheduler;
 
-    // запустить для текущего дня
     @PostMapping("/trigger")
     public String trigger() {
         scheduler.fetchFilmsForDay(java.time.LocalDate.now().getDayOfWeek());
